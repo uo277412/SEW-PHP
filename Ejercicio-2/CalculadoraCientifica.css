@@ -1,0 +1,54 @@
+/* /* Silvia Suárez Prendes, UO277412
+
+/*Selector Specificity: (0, 0, 1)*/
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    margin-top: 3%;
+    margin-left: 35%;
+    margin-right: 30%;
+
+    width: 26em;
+    text-align: center;
+    color: black;
+}
+
+/*Especificidad: 003*/
+body>form>fieldset {
+    padding: 1.5em;
+    background-color: #3395b0;
+    border-radius: 0.75em;
+    
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; /* 7 filas */
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* 4 columnas */
+    
+    border-style: none;
+    height: 49em;
+    row-gap: 1em;
+    column-gap: 0.8em;
+}
+
+/* Especificidad: 004*/
+body>form>fieldset>textarea {
+    width: 97%;
+    height: 100%;
+    resize: none;
+    text-align: right;
+    background-color: #ffffff;
+    
+    font-size: 2em;
+    grid-column: span 4;
+    grid-row: span 1;
+    border-radius: 0.5em;
+}
+
+/*Especificidad: 004*/
+body>form>fieldset>input {
+    width: 3em;
+    height: 1.8em;
+    font-size: 1.4em;
+    background-color: #ffffff;
+    border-radius: 0.7em;
+    border-style: none;
+}
