@@ -32,6 +32,8 @@
         <a title="Generar factura" accesskey="G" tabindex="6" href="#generarFactura">Generar factura</a>
     </nav>
 
+
+
     <section> <a id="añadirProducto"></a>
         <h2>Añadir producto a la cesta</h2>
         <p>Rellene los siguientes datos y una vez completados pulse el botón para añadir el nuevo producto a la cesta.
@@ -172,6 +174,88 @@
             $this->base = "ejercicio7";
         }
 
+        function crearBaseYTablas()
+        {
+            echo "entra";
+            // Establecer conexión al SGBD local con XAMPP con el usuario creado (server, usuario, contraseña)
+            $base = new mysqli($this->server, $this->usuario, $this->contraseña);
+
+
+
+            // Comprobar la conexión -> lanzar mensaje
+            if ($base->connect_error) {
+                exit("<p>ERROR de conexión:" . $base->connect_error . "</p>");
+            } else {
+                echo "<p>Conexión establecida con " . $base->host_info . "</p>";
+            }
+
+            $crearBD = "CREATE DATABASE IF NOT EXISTS " . $this->base . " COLLATE utf8_spanish_ci";
+
+            if ($base->query($crearBD) === TRUE) {
+                echo "<p>La base de datos ha sido creada correctamente</p>";
+            } else {
+                echo "<p>Ha ocurrido un error en la creación de la base de datos. Error:" . $base->error . "</p>";
+                exit();
+            }
+            $base->select_db($this->base);
+
+            $crearTablaProducto = "CREATE TABLE IF NOT EXISTS PRODUCTO (
+                codigo_producto VARCHAR(5) NOT NULL,
+                nombre_producto VARCHAR(255) NOT NULL,
+                precio_producto INT NOT NULL,
+                descripcion_producto VARCHAR(255) NOT NULL
+            );";
+            $base->query($crearTablaProducto);
+            $productoKeys = "ALTER TABLE PRODUCTO ADD PRIMARY KEY (codigo_producto)";
+            $base->query($productoKeys);
+
+
+            $crearTablaPedidoProducto = "CREATE TABLE IF NOT EXISTS PEDIDO_PRODUCTO (
+                codigo_producto VARCHAR(5) NOT NULL,
+                codigo_factura VARCHAR(5) NOT NULL,
+                cantidad_producto INT NOT NULL
+            );";
+            $base->query($crearTablaPedidoProducto);
+            $pedidoProductoKeys = "ALTER TABLE PEDIDO_PRODUCTO ADD PRIMARY KEY (codigo_factura), 
+                                                               ADD FOREIGN KEY (codigo_producto) REFERENCES PRODUCTO(codigo_producto)";
+            $base->query($pedidoProductoKeys);
+
+
+            $crearTablaCliente = "CREATE TABLE IF NOT EXISTS CLIENTE (
+                codigo_cliente VARCHAR(5) NOT NULL,
+                nombreApellidos_cliente VARCHAR(255) NOT NULL
+            );";
+            $base->query($crearTablaCliente);
+            $clienteKeys = "ALTER TABLE CLIENTE ADD PRIMARY KEY (codigo_cliente)";
+            $base->query($clienteKeys);
+
+
+            $crearTablaAlmacen = "CREATE TABLE IF NOT EXISTS ALMACEN (
+                codigo_almacen VARCHAR(5) NOT NULL,
+                nombre_almacen VARCHAR(255) NOT NULL,
+                localizacion_almacen VARCHAR(255) NOT NULL
+            );";
+            $base->query($crearTablaAlmacen);
+            $almacenKeys = "ALTER TABLE ALMACEN ADD PRIMARY KEY (codigo_almacen)";
+            $base->query($almacenKeys);
+
+
+            $crearTablaFactura = "CREATE TABLE IF NOT EXISTS FACTURA (
+                codigo_cliente VARCHAR(5) NOT NULL,
+                codigo_almacen VARCHAR(5) NOT NULL,
+                codigo_factura VARCHAR(5) NOT NULL,
+                importe_factura INT NOT NULL
+            );";
+            $base->query($crearTablaFactura);
+            $facturaKeys = "ALTER TABLE FACTURA ADD FOREIGN KEY (codigo_factura) REFERENCES PEDIDO_PRODUCTO(codigo_factura),
+                                                ADD FOREIGN KEY (codigo_almacen) REFERENCES ALMACEN(codigo_almacen),
+                                                ADD FOREIGN KEY (codigo_cliente) REFERENCES CLIENTE(codigo_cliente)";
+            $base->query($facturaKeys);
+
+            // Cerrar la conexión
+            $base->close();
+        }
+
         function añadirProducto()
         {
             // Establecer conexión al SGBD local con XAMPP con el usuario creado (server, usuario, contraseña)
@@ -281,27 +365,6 @@
         }
 
 
-        function cargarProductos()
-        {
-            // Establecer conexión al SGBD local con XAMPP con el usuario creado (server, usuario, contraseña)
-            $b = new mysqli($this->server, $this->usuario, $this->contraseña);
-            $b->select_db($this->base);
-
-            $archivo = fopen($_FILES['archivoACargar']['tmp_name'], "rb");
-            $linea = fgetcsv($archivo);
-
-            while ($linea) {
-                $query = $b->prepare("INSERT INTO PRODUCTO (codigo_producto, nombre_producto, precio_producto, descripcion_producto) VALUES (?,?,?,?)");
-
-                $query->bind_param('ssis', $linea[0], $linea[1], $linea[2], $linea[3]);
-
-                $linea = fgetcsv($archivo);
-                $query->execute();
-            }
-
-            echo "El archivo ha sido cargado correctamente";
-        }
-
         function generarFactura()
         {
             // Establecer conexión al SGBD local con XAMPP con el usuario creado (server, usuario, contraseña)
@@ -328,6 +391,8 @@
     $baseDatos = new BaseDatos();
 
     if (count($_POST) > 0) {
+        if (isset($_POST['botonCrearBaseYTablas']))
+            $baseDatos->crearBaseYTablas();
         if (isset($_POST['botonAñadirProducto']))
             $baseDatos->añadirProducto();
         if (isset($_POST['botonCrearPerfilCliente']))
@@ -338,8 +403,6 @@
             $baseDatos->modificarCantidadProducto();
         if (isset($_POST['botonBorrarProducto']))
             $baseDatos->borrarProducto();
-        if (isset($_POST['botonImportarDatos']))
-            $baseDatos->cargarProductos();
         if (isset($_POST['botonGenerarFactura']))
             $baseDatos->generarFactura();
     }
