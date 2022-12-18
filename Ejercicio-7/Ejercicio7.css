@@ -1,0 +1,41 @@
+/*Especificidad: 001*/
+body {
+    font-family: "Cambria Math", sans-serif;
+    background-color: #f3c4ff;
+    color:#000000;
+    padding: 3em;
+}
+
+/*Especificidad: 001*/
+nav {
+    font-size: 1.25em;
+    text-align: center;
+}
+
+/*Especificidad: 001*/
+h1 {
+    font-size: 1.8em;
+    text-align: center;
+    text-transform: uppercase;
+    background-color: #F165A2;
+    color:#000000;
+}
+
+/*Especificidad: 001*/
+h2 {
+    font-size: 1.3em;
+    background-color: #ff81b8;
+    color:#000000;
+}
+
+/*Especificidad: 001*/
+ul {
+    line-height: 25px;
+    font-size: large;
+}
+
+/*Especificidad: 001*/
+fieldset {
+    padding: 0em;
+    border: none;
+}

@@ -1,0 +1,1 @@
+Al intentar validar el outerHTML de la página web se añaden automáticamente unos scripts al header que dan error a la hora de validar el HTML porque desplazan el meta-charset demasiado abajo. Este error solo ocurre con el navegador Google Chrome. En Edge no da ningún error.
